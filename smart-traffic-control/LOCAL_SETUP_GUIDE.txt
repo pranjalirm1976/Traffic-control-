@@ -1,0 +1,32 @@
+════════════════════════════════════════════════════════
+ SMART TRAFFIC CONTROL - LOCAL SETUP
+ AI-style Rule-based Signals + TomTom Traffic
+════════════════════════════════════════════════════════
+
+1️⃣ Install Node.js (v18+)
+
+2️⃣ Install dependencies
+
+    cd smart-traffic-control
+    npm install
+
+3️⃣ (Optional) Set your TomTom key
+
+    - Open `.env.example`
+    - Put your key in TOMTOM_API_KEY
+    - Or rely on the default key hard-coded in server.js for testing
+
+4️⃣ Run the backend + UI
+
+    npm start
+
+5️⃣ Open in browser
+
+    http://localhost:3000
+
+You will see:
+- Futuristic calm dashboard UI
+- Live TomTom traffic map of India (you can pan to Pune)
+- Simulated intersections in Pune
+- AI-style rule-based signal phases reacting to congestion
+- Ambulance detection demo button

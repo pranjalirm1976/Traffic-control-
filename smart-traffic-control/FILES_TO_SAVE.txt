@@ -1,0 +1,23 @@
+FILES INCLUDED:
+
+Root:
+- server.js
+- simulator.js
+- package.json
+- .env.example
+- docker-compose.yml
+- docker-compose.production.yml
+- Dockerfile
+- kubernetes-deployment.yml
+- LOCAL_SETUP_GUIDE.txt
+- HOW_TO_DOWNLOAD.md
+- FILES_TO_SAVE.txt
+
+Subfolders:
+- public/index.html
+- public/style.css
+- public/main.js
+- docs/README.md
+- docs/API_DOCUMENTATION.md
+- docs/DEPLOYMENT_GUIDE.md
+- .github/workflows/ci-cd.yml

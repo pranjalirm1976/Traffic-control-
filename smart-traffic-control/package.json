@@ -1,0 +1,19 @@
+{
+  "name": "smart-traffic-control",
+  "version": "3.0.0",
+  "description": "Smart Traffic Control System with AI-style rule-based signals + TomTom traffic",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "simulate": "node simulator.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.0",
+    "cors": "^2.8.5",
+    "express": "^4.19.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

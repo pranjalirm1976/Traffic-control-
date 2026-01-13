@@ -1,0 +1,41 @@
+# Kubernetes Deployment for Smart Traffic Control (demo)
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smart-traffic-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: smart-traffic
+  template:
+    metadata:
+      labels:
+        app: smart-traffic
+    spec:
+      containers:
+        - name: smart-traffic
+          image: smart-traffic-control:latest
+          env:
+            - name: PORT
+              value: "3000"
+            - name: TOMTOM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: tomtom-secret
+                  key: apiKey
+          ports:
+            - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: smart-traffic-service
+spec:
+  selector:
+    app: smart-traffic
+  ports:
+    - port: 80
+      targetPort: 3000
+  type: LoadBalancer

@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Smart Traffic Control - AI Signals + TomTom</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- TomTom Maps SDK for Web -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps.css"
+    />
+    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps-web.min.js"></script>
+    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/services/services-web.min.js"></script>
+  </head>
+  <body>
+    <div class="orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="brand">
+            <span class="brand-dot"></span>
+            <div>
+              <h1>Smart Traffic Control</h1>
+              <p>AI-style signal control fused with live TomTom traffic</p>
+            </div>
+          </div>
+          <nav class="nav-tabs">
+            <button class="nav-tab nav-tab--active" data-tab="overview">
+              <span class="nav-icon">🏠</span>
+              <span>Overview</span>
+            </button>
+            <button class="nav-tab" data-tab="signals">
+              <span class="nav-icon">🚦</span>
+              <span>Signals</span>
+            </button>
+            <button class="nav-tab" data-tab="ambulances">
+              <span class="nav-icon">🚑</span>
+              <span>Ambulances</span>
+            </button>
+            <button class="nav-tab" data-tab="analytics">
+              <span class="nav-icon">📊</span>
+              <span>Analytics</span>
+            </button>
+          </nav>
+        </div>
+
+        <div class="topbar-right">
+          <div class="system-status">
+            <span class="status-dot"></span>
+            <span>SYSTEM ACTIVE</span>
+          </div>
+          <div class="clock" id="clock"></div>
+          <button class="icon-button" aria-label="Alerts">
+            🔔
+          </button>
+          <div class="user-pill">
+            <span class="user-avatar">OP</span>
+            <span class="user-name">Operator Mode</span>
+          </div>
+        </div>
+      </header>
+
+      <main class="layout">
+        <aside class="sidebar">
+          <section class="panel">
+            <h2>Search Location</h2>
+            <form id="search-form" class="search">
+              <input
+                id="search-input"
+                type="text"
+                placeholder="Search city, road or area (India)"
+                autocomplete="off"
+              />
+              <button type="submit">Go</button>
+            </form>
+            <p class="hint">Examples: Pune, Mumbai, Delhi, Bengaluru…</p>
+          </section>
+
+          <section class="panel">
+            <h2>Map Layers</h2>
+            <label class="toggle">
+              <input type="checkbox" id="toggle-flow" checked />
+              <span>Traffic flow (speed / congestion)</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="toggle-incidents" checked />
+              <span>Traffic incidents (jams, accidents)</span>
+            </label>
+          </section>
+
+          <section class="panel">
+            <h2>Ambulance Detection</h2>
+            <p class="hint">
+              Click to run a demo ambulance detection
+              (placeholder logic for your AI model).
+            </p>
+            <button id="btn-detect-ambulance" class="btn-ambulance">
+              Run Ambulance Detection
+            </button>
+            <div class="info-row">
+              <span class="info-label">Last result</span>
+              <span class="info-value" id="ambulance-last">–</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Confidence</span>
+              <span class="info-value" id="ambulance-conf">–</span>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>Pune Intersections</h2>
+            <p class="hint">
+              The system currently simulates Swargate, Kothrud Depot,
+              Shivaji Nagar and Hadapsar.
+            </p>
+          </section>
+
+          <footer class="sidebar-footer">
+            <span id="app-status">Backend: unknown</span>
+          </footer>
+        </aside>
+
+        <section class="main">
+          <!-- OVERVIEW TAB -->
+          <section class="tab tab--active" data-tab-panel="overview">
+            <section class="dashboard">
+              <article class="metric-card glass-card">
+                <div class="metric-label">Total intersections</div>
+                <div class="metric-value" id="metric-intersections">–</div>
+                <div class="metric-caption">Junctions under AI-style control</div>
+              </article>
+              <article class="metric-card glass-card">
+                <div class="metric-label">Active alerts</div>
+                <div class="metric-value" id="metric-alerts">–</div>
+                <div class="metric-caption">High congestion / ambulance / delay</div>
+              </article>
+              <article class="metric-card glass-card">
+                <div class="metric-label">Detected ambulances</div>
+                <div class="metric-value" id="metric-ambulances">–</div>
+                <div class="metric-caption">Demo detections this session</div>
+              </article>
+              <article class="metric-card glass-card">
+                <div class="metric-label">Avg congestion</div>
+                <div class="metric-value" id="metric-congestion">–</div>
+                <div class="metric-caption">0 = free, 1 = heavy</div>
+              </article>
+            </section>
+
+            <section class="content-grid">
+              <div class="map-section glass-card">
+                <div class="map-header">
+                  <div>
+                    <h2>Live Traffic Map (TomTom · India)</h2>
+                    <span class="map-caption">
+                      TomTom Traffic Flow & Incidents layered over real roads.
+                      Pan to Pune to see your test area.
+                    </span>
+                  </div>
+                  <span class="badge badge-live">LIVE</span>
+                </div>
+                <div id="map" class="map-view"></div>
+              </div>
+
+              <div class="signals-section glass-card">
+                <div class="signals-header">
+                  <div>
+                    <h2>AI-style Simulated Signals</h2>
+                    <span class="map-caption">
+                      Rule-based controller uses queues × congestion
+                      to select the next green phase.
+                    </span>
+                  </div>
+                  <span class="badge">MODE · PRESSURE-BASED</span>
+                </div>
+                <div id="signals-container" class="signals-grid"></div>
+              </div>
+            </section>
+          </section>
+
+          <!-- SIGNALS TAB -->
+          <section class="tab" data-tab-panel="signals">
+            <div class="panel glass-card" style="margin-bottom:0.75rem;">
+              <h2>Signals Overview</h2>
+              <p class="map-caption">
+                All controlled intersections with their current phases and queue lengths.
+              </p>
+            </div>
+            <div class="signals-section glass-card">
+              <div class="signals-header">
+                <div>
+                  <h2>Pune Intersections</h2>
+                  <span class="map-caption">
+                    Same data as overview, but focused layout for operators.
+                  </span>
+                </div>
+              </div>
+              <div id="signals-container-signals-tab" class="signals-grid"></div>
+            </div>
+          </section>
+
+          <!-- AMBULANCES TAB -->
+          <section class="tab" data-tab-panel="ambulances">
+            <div class="panel glass-card">
+              <h2>Ambulance Fleet (Demo)</h2>
+              <p class="map-caption">
+                This section can list all ambulances with live GPS,
+                ETAs and priority routes. For now, use the ambulance
+                detection on the left and treat this tab as future work.
+              </p>
+            </div>
+          </section>
+
+          <!-- ANALYTICS TAB -->
+          <section class="tab" data-tab-panel="analytics">
+            <div class="panel glass-card">
+              <h2>Analytics & KPIs (Demo)</h2>
+              <p class="map-caption">
+                Here you can later add charts for average delay, corridor
+                performance, ambulance response times and daily/weekly KPIs.
+                Mention this as planned extension in your report.
+              </p>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="main.js"></script>
+  </body>
+</html>

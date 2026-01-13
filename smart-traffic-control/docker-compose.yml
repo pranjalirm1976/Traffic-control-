@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  smart-traffic-app:
+    build: .
+    container_name: smart_traffic_app
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - TOMTOM_API_KEY=${TOMTOM_API_KEY}
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
